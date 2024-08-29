@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menentukan Jenis Segitiga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        canvas {
+            border: 1px solid #000;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Menentukan Jenis Segitiga</h1>
+        <label for="sideA">Sisi A (cm):</label>
+        <input type="number" id="sideA" min="0" step="any">
+        
+        <label for="sideB">Sisi B (cm):</label>
+        <input type="number" id="sideB" min="0" step="any">
+        
+        <label for="sideC">Sisi C (cm):</label>
+        <input type="number" id="sideC" min="0" step="any">
+        
+        <button onclick="determineTriangle()">Tentukan Jenis Segitiga</button>
+        <button onclick="resetFields()">Reset</button>
+        
+        <div class="result" id="result"></div>
+        
+        <canvas id="triangleCanvas" width="400" height="400"></canvas>
+    </div>
+
+    <script>
+        function determineTriangle() {
+            // Ambil nilai dari input
+            const a = parseFloat(document.getElementById('sideA').value);
+            const b = parseFloat(document.getElementById('sideB').value);
+            const c = parseFloat(document.getElementById('sideC').value);
+
+            // Validasi jika semua sisi diisi
+            if (isNaN(a) || isNaN(b) || isNaN(c) || a <= 0 || b <= 0 || c <= 0) {
+                document.getElementById('result').innerText = 'Harap masukkan nilai sisi yang valid.';
+                resetCanvas();
+                return;
+            }
+
+            // Periksa jenis segitiga
+            let triangleType = '';
+            if (a + b > c && a + c > b && b + c > a) {
+                if (a === b && b === c) {
+                    triangleType = 'Segitiga Sama Sisi';
+                } else if (a === b || b === c || a === c) {
+                    triangleType = 'Segitiga Sama Kaki';
+                } else {
+                    triangleType = 'Segitiga Sembarang';
+                }
+            } else {
+                document.getElementById('result').innerText = 'Nilai yang dimasukkan tidak membentuk segitiga.';
+                resetCanvas();
+                return;
+            }
+
+            // Hitung kuadrat sisi
+            const a2 = a * a;
+            const b2 = b * b;
+            const c2 = c * c;
+
+            let angleType = '';
+            if (a2 + b2 === c2 || a2 + c2 === b2 || b2 + c2 === a2) {
+                angleType = 'Segitiga Siku-Siku';
+            } else if (a2 + b2 < c2 || a2 + c2 < b2 || b2 + c2 < a2) {
+                angleType = 'Segitiga Tumpul';
+            } else {
+                angleType = 'Segitiga Lancip';
+            }
+
+            // Tampilkan hasil
+            document.getElementById('result').innerText = `${triangleType} dan ${angleType}`;
+            
+            // Gambar segitiga dengan keterangan
+            drawTriangle(a, b, c);
+        }
+
+        function drawTriangle(a, b, c) {
+            const canvas = document.getElementById('triangleCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            // Set background color
+            ctx.fillStyle = '#f0f0f0';  // Ubah warna latar belakang sesuai keinginan
+            ctx.fillRect(0, 0, width, height);
+
+            // Konversi ukuran sisi untuk canvas
+            const scale = 150 / Math.max(a, b, c);
+            const x1 = width / 2 - 100;  // Geser ke kiri dengan menurunkan x1
+            const y1 = height / 2;
+            const x2 = x1 + a * scale;
+            const y2 = y1;
+            const x3 = x1 + (b * scale) * Math.cos(Math.PI / 3);  // Asumsi sudut 60 derajat
+            const y3 = y1 + (b * scale) * Math.sin(Math.PI / 3);
+            
+            // Tentukan titik berdasarkan ukuran sisi
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x3, y3);
+            ctx.closePath();
+
+            // Gambar segitiga
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(0, 150, 255, 0.2)';
+            ctx.fill();
+
+            // Menghapus bagian kode untuk menampilkan keterangan pada sisi
+            // ctx.font = '16px Arial';
+            // ctx.fillStyle = 'black';
+            // ctx.textAlign = 'center';
+
+            // Jarak keterangan dari sisi
+            // const offset = 80;  // Jarak keterangan dari sisi segitiga
+
+            // Hitung titik tengah sisi untuk keterangan
+            // const midX1 = (x1 + x2) / 2;
+            // const midY1 = (y1 + y2) / 2;
+            // const midX2 = (x2 + x3) / 2;
+            // const midY2 = (y2 + y3) / 2;
+            // const midX3 = (x3 + x1) / 2;
+            // const midY3 = (y3 + y1) / 2;
+
+            // Hitung arah normal dari sisi untuk menentukan posisi teks
+            // const normX1 = (x2 - x1) * -1;
+            // const normY1 = (y2 - y1) * -1;
+            // const length1 = Math.sqrt(normX1 * normX1 + normY1 * normY1);
+            // const unitNormX1 = normX1 / length1;
+            // const unitNormY1 = normY1 / length1;
+
+            // const normX2 = (x3 - x2) * -1;
+            // const normY2 = (y3 - y2) * -1;
+            // const length2 = Math.sqrt(normX2 * normX2 + normY2 * normY2);
+            // const unitNormX2 = normX2 / length2;
+            // const unitNormY2 = normY2 / length2;
+
+            // const normX3 = (x1 - x3) * -1;
+            // const normY3 = (y1 - y3) * -1;
+            // const length3 = Math.sqrt(normX3 * normX3 + normY3 * normY3);
+            // const unitNormX3 = normX3 / length3;
+            // const unitNormY3 = normY3 / length3;
+
+            // Tampilkan keterangan dengan jarak yang lebih besar
+            // ctx.fillText('A: ' + a.toFixed() + ' cm', midX1 + unitNormX1 * offset, midY1 + unitNormY1 * offset);
+            // ctx.fillText('B: ' + b.toFixed() + ' cm', midX2 + unitNormX2 * offset, midY2 + unitNormY2 * offset);
+            // ctx.fillText('C: ' + c.toFixed() + ' cm', midX3 + unitNormX3 * offset, midY3 + unitNormY3 * offset);
+        
+            // Menghapus garis-garis merah dari titik sudut ke pusat segitiga
+            // Garis sudut (dari titik sudut ke pusat segitiga)
+            // const centerX = (x1 + x2 + x3) / 3;
+            // const centerY = (y1 + y2 + y3) / 3;
+
+            // ctx.strokeStyle = 'red';
+            // ctx.lineWidth = 1;
+            
+            // Garis dari titik 1 ke pusat
+            // ctx.beginPath();
+            // ctx.moveTo(x1, y1);
+            // ctx.lineTo(centerX, centerY);
+            // ctx.stroke();
+
+            // Garis dari titik 2 ke pusat
+            // ctx.beginPath();
+            // ctx.moveTo(x2, y2);
+            // ctx.lineTo(centerX, centerY);
+            // ctx.stroke();
+
+            // Garis dari titik 3 ke pusat
+            // ctx.beginPath();
+            // ctx.moveTo(x3, y3);
+            // ctx.lineTo(centerX, centerY);
+            // ctx.stroke();        
+        }
+
+        function resetFields() {
+            // Reset input fields
+            document.getElementById('sideA').value = '';
+            document.getElementById('sideB').value = '';
+            document.getElementById('sideC').value = '';
+
+            // Reset result
+            document.getElementById('result').innerText = '';
+
+            // Reset canvas
+            resetCanvas();
+        }
+
+        function resetCanvas() {
+            const canvas = document.getElementById('triangleCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
